@@ -1,0 +1,5 @@
+[package]
+name = "rustml"
+version = "0.1.0"
+authors = ["Cassandra O'Connell <oconnecl@gmail.com>"]
+edition = "2018"
