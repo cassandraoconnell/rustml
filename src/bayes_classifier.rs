@@ -29,7 +29,7 @@ pub struct NaiveBayesClassifier<T: Hash + Eq + Copy> {
     datum_counts: HashMap<DataType, Counts<T>>,
 }
 
-impl <T: Hash + Eq + Copy>  NaiveBayesClassifier<T> {
+impl<T: Hash + Eq + Copy> NaiveBayesClassifier<T> {
     pub fn new() -> NaiveBayesClassifier<T> {
         NaiveBayesClassifier {
             classes: Vec::new(),
@@ -38,28 +38,22 @@ impl <T: Hash + Eq + Copy>  NaiveBayesClassifier<T> {
         }
     }
 
-    pub fn train<U: Tokenize>(
-        &mut self,
-        class: T,
-        data: U
-    ) {
+    pub fn train<U: Tokenize>(&mut self, class: T, data: U) {
         let iterator: Number = 1.0;
 
         for datum in data.tokenize() {
-            let recorded_word_counts = self.datum_counts
-                .entry(datum)
-                .or_insert(
-                    Counts::new()
-                );
+            let recorded_word_counts = self.datum_counts.entry(datum).or_insert(Counts::new());
 
             recorded_word_counts.total += iterator;
-            recorded_word_counts.per_class
+            recorded_word_counts
+                .per_class
                 .entry(class)
                 .and_modify(|entry| *entry += iterator)
                 .or_insert(iterator);
 
             self.class_counts.total += iterator;
-            self.class_counts.per_class
+            self.class_counts
+                .per_class
                 .entry(class)
                 .and_modify(|entry| *entry += iterator)
                 .or_insert(iterator);
@@ -81,14 +75,17 @@ impl <T: Hash + Eq + Copy>  NaiveBayesClassifier<T> {
                     let mut new_probability: Number = 0.01;
 
                     if let Some(datum_count_in_class) = datum_counts.per_class.get(&class) {
-                        let mut probability_of_datum_given_class: Number = *datum_count_in_class / total_datum_count;
+                        let mut probability_of_datum_given_class: Number =
+                            *datum_count_in_class / total_datum_count;
 
                         if probability_of_datum_given_class == 1.0 {
                             probability_of_datum_given_class = 0.99;
                         }
 
                         new_probability = match probability_map.get(&class) {
-                            Some(existing_probability) => existing_probability * probability_of_datum_given_class,
+                            Some(existing_probability) => {
+                                existing_probability * probability_of_datum_given_class
+                            }
                             None => probability_of_datum_given_class,
                         };
 

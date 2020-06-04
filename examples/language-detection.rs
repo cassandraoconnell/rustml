@@ -1,13 +1,13 @@
-use std::io;
-use rustml::bayes_classifier::{Tokenize, DataType, NaiveBayesClassifier};
-use std::string::String;
+use rustml::bayes_classifier::{DataType, NaiveBayesClassifier, Tokenize};
 use std::fmt::Display;
+use std::io;
+use std::string::String;
 
 #[derive(Eq, PartialEq, Hash, Copy, Clone)]
 enum Language {
     English,
     Spanish,
-    French
+    French,
 }
 
 impl Display for Language {
@@ -28,20 +28,20 @@ impl Tokenize for Content {
     fn tokenize(&self) -> Vec<DataType> {
         let split_by: char = ' ';
         let char_whitelist: [char; 27] = [
-            split_by,
-            'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
-            'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+            split_by, 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o',
+            'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         ];
 
         self.string
             .trim()
             .to_lowercase()
             .chars()
-                .filter(|character| char_whitelist.contains(&character))
-                .map(|character| character.to_string())
-                .collect::<DataType>()
+            .filter(|character| char_whitelist.contains(&character))
+            .map(|character| character.to_string())
+            .collect::<DataType>()
             .split(split_by)
-            .map(|word| word.to_string()).collect()
+            .map(|word| word.to_string())
+            .collect()
     }
 }
 
@@ -114,14 +114,16 @@ fn main() {
                     Some(current_most_probable_language) => {
                         let mut new_most_probable_language = current_most_probable_language;
 
-                        if let Some(current_highest_probability) = probabilities.get(&current_most_probable_language) {
+                        if let Some(current_highest_probability) =
+                            probabilities.get(&current_most_probable_language)
+                        {
                             if current_highest_probability < class_probability {
                                 new_most_probable_language = *class;
                             }
                         }
 
                         Some(new_most_probable_language)
-                    },
+                    }
                     None => Some(*class),
                 };
             }
